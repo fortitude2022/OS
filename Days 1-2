@@ -156,6 +156,8 @@ get-item <file> -stream *
         shows ADS exists/not
 get-content <file> -stream <hidden.ext>
 
+
+
 ============================
 
 user settings loaded on user logon
@@ -320,13 +322,13 @@ get-item <file> -stream *
         shows ADS exists/not
 get-content <file> -stream <hidden.ext>
 
-============================
+============================ WINDOWS FILE MNGMENT AND DATA STREAMS =====================
 
-user settings loaded on user logon
-may require restart depending on whre in registry
+Windows files below is a map of IPs to Hosts:
+system32\drivers\ect\hosts
 
+group finding and permissions:
 
+ gci C:\ -Filter "*Fortune*" -force -recurse -ErrorAction SilentlyContinue | get-item -stream * -ErrorAction SilentlyContinue | Where { $_.stream -ne ':$DATA' } | gc
 
-
-
-
+^^ ifilter on text if needed  >   ^-force + recurse ^^ |                      ^^ getting stream of every item | where: ^^ stream not= to '$DATA' text pattern
