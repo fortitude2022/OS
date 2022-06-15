@@ -1,0 +1,382 @@
+CIM class
+-classes in windows at kernel level, grouping of all like info together
+-very powerful, revealing output
+-get-service -name Power | select *
+        (can also be accessed via task mngr in services tab)
+-wmi windows mgmt interpretation
+        anything dealing w/ winOS is likely wmi object
+-Get-ciminstance = get-wmiobject
+        getcmi works on linux
+-get-cimclass *
+        instances can be taken from elsewhere instead of root
+-for the OS class, we only work with win32_ objects
+-Get-WmiObject win32_service | where {$_.name -like "power"} | select *
+
+-POWERSHELL is actually a DLL File, not an .exe executable
+-system.management.automation.dll
+-whenever launching powershell, it searches that dll, will error out if not found
+        dll is signed by MS
+        the executable is just the GUI of the application
+        hackers can modify the dll file to be malicious
+        * the dll can be force loaded into memory to include the bad dll
+-$profile is a file that contains setting to pwsh sessions
+        4 kinds
+                AllUsersAllHosts
+                AU CH
+                CU AH
+                CU CH
+        CurrentUserCurrentHost is read first; if not founds, then will read CUAH; then reads    AUCH, then AUAH
+        Highest priority is AUAH, where CUCH is lowest
+        To write in AUAH, you need elevated permissions
+Create new PSsessions; Invoke-command, used for remote PS sessions
+Invoke-command doesnt carry over a profile nor establish a session
+
+CUser and CHost is under Documents, usually called Powershell or WindowsPowershell
+$psversiontable displays pwsh version information
+
+====== TO run a specific powershell profile:
+start powershell -noprofile -version 2 -windowstyle hidden
+                                        ^^^^^^^^^^^^^^^^^
+                                        RED FLAG SWITCH, PURPOSEFULLY WRITTEN
+
+Pwsh transcripts:
+        Start-transcript (doesnt run in ISE unless v6 and on)
+        gets the input AND output of everycommand
+        can be used to get a remote log, use md5 hashes to maintain reliability
+                saved as a .txt file, can be opened w/ variety of word apps
+
+        Get-content <pathtotranscript>
+                gets start time, username, runas, config name, where its being run to
+
+        Invoke-command -computername <IPaddr/name> -scriptblock <code block {opt code}>
+        Invoke-command -computername <ip,ip2,ip2,name,name2> -filepath <script location>
+(cont from prev line) -AsJob
+
+        Immediately after previous line :
+        Recieve-Job <#>
+
+
+Pssessions
+
+        New-PSsession -computername <ip/name>
+#Not neccessary at the moment#
+
+Two requirements
+On rmt machine:
+        winrm service must be running
+        RpcEptMapper (Remote procedure call application) -for forwarding windows assets,
+win registry, GUI, but not needed for pssession
+
+        establish trusted hosts:
+        get-item WSMan:\localhost\client\trustedhosts
+        set-item "<above line>" -value "domain_controller"
+        #set-item sets the trusted host, get-item will enumerate
+
+        set-item can be fed by an array, w/ values fed by a comma
+
+        set-item <path> -value "maleware.io" -concatenate
+
+[string]::empty
+[system.text.ASCIIEncodig]::Convert(...
+^^^Example stuff for .net ^^^^
+
+
+
+========== Windows Registry ================
+
+5 main HIVE KEYS
+store user settings
+HKLM changes require a restart usually
+
+
+Hive files
+HKCR Classes Root
+        file extensions and programs
+HKLM system cucontset control
+        users rights + permissions
+                #not really
+        software contain sftwr configs
+        hardware containts infor on connected devices
+                mutable data is volatile
+        will read and create regardless of who logged in
+HKU Users
+        user profiles
+        links to current unser, pool of all user info
+HKCC Current Config
+
+
+============ query registry =============
+
+get-childitem
+get-item
+get-itemproperty
+
+HLKM:\software\microsoft\windows\currentversion\run
+
+Create:
+new-item
+
+Edit:
+set-itemproperty
+
+Remove:
+remove-item
+remove-itemproperty
+
+======== RUN KEYS =============
+
+HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
+HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
+
+========== Windows Registry ================
+
+5 main HIVE KEYS
+store user settings
+HKLM changes require a restart usually
+
+
+Hive files
+HKCR Classes Root
+        file extensions and programs
+HKLM system cucontset control
+        users rights + permissions
+                #not really
+        software contain sftwr configs
+        hardware containts infor on connected devices
+                mutable data is volatile
+        will read and create regardless of who logged in
+HKU Users
+        user profiles
+        links to current unser, pool of all user info
+HKCC Current Config
+
+
+============ query registry =============
+
+get-childitem
+get-item
+get-itemproperty
+
+HLKM:\software\microsoft\windows\currentversion\run
+
+Create:
+new-item
+
+Edit:
+set-itemproperty
+
+Remove:
+remove-item
+remove-itemproperty
+
+======== RUN KEYS =============
+
+HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
+HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
+
+
+========== Windows Registry ================
+
+5 main HIVE KEYS
+store user settings
+HKLM changes require a restart usually=========== Alternate Data Streams ===============
+
+intro ntfs win nt 3.1
+implem filesystem forks in order to maintain ...
+ADS DOES NOT CHANGE HASH
+stores the METADATA
+        file attribs, icons, thumbn,...scripts
+used to hide data
+scanned by antivirus (Win Def is ADS aware)
+
+a File's ADS is deleted upon being copied to a FAT32 filesystem
+CANNOT BE disabled
+[filename.ext]:[alt_stream_name]::$DATA
+
+dir /R filename to reveal ADS
+use 'more' cmd to get content of ADS
+
+in pwsh:
+
+set the ADS to a file:
+set-content <file> -value "hidden content" -stream <hiddenname.ext>
+
+enumerate ADS:
+get-item <file> -stream *
+        shows ADS exists/not
+get-content <file> -stream <hidden.ext>
+
+============================
+
+user settings loaded on user logon
+may require restart depending on whre in registry
+
+
+
+
+
+Hive files
+HKCR Classes Root
+        file extensions and programs
+HKLM system cucontset control
+        users rights + permissions
+                #not really
+        software contain sftwr configs
+        hardware containts infor on connected devices
+                mutable data is volatile
+        will read and create regardless of who logged in
+HKU Users
+        user profiles
+        links to current unser, pool of all user info
+HKCC Current Config
+
+
+============ query registry =============
+
+get-childitem
+get-item
+get-itemproperty
+
+HLKM:\software\microsoft\windows\currentversion\run
+
+Create:
+new-item
+
+Edit:
+set-itemproperty
+
+Remove:
+remove-item
+remove-itemproperty
+
+======== RUN KEYS =============
+
+HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
+HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
+
+========== Windows Registry ================
+
+5 main HIVE KEYS
+store user settings
+HKLM changes require a restart usually
+
+
+Hive files
+HKCR Classes Root
+        file extensions and programs
+HKLM system cucontset control
+        users rights + permissions
+                #not really
+        software contain sftwr configs
+        hardware containts infor on connected devices
+                mutable data is volatile
+        will read and create regardless of who logged in
+HKU Users
+        user profiles
+        links to current unser, pool of all user info
+HKCC Current Config
+
+
+============ query registry =============
+
+get-childitem
+get-item
+get-itemproperty
+
+HLKM:\software\microsoft\windows\currentversion\run
+
+Create:
+new-item
+
+Edit:
+set-itemproperty
+
+Remove:
+remove-item
+remove-itemproperty
+
+======== RUN KEYS =============
+
+HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
+HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
+
+
+========== PSDrive ============
+
+Get-PSdrive
+new-PSDrive -name * -PSProvider * -Root
+-name is name of drive
+-psprovider is type
+-root is location
+
+you can mount drives also
+
+New-PSDrive -name FileServer -PSProvider FileSystem -Root "\\file-server\warrior share"
+gci FileServer:
+shows everything within the new drive
+
+-Basically these are shortcuts instead of having to go thru EXPLORER.exe and digging
+-you can use it to remote to other drives including on other users
+
+new-psdrive -name sysinternals -psprovider -filesystem -root "\\live.sysinternals.com\Tools"
+
+
+when NOT FILESYSTEM
+
+new-psdrive -name RunKey -PSprovider Registry -root \HKLM\run key
+
+================== Reading the Reg ===============
+
+Security descriptors info avail on microsoft website
+
+SACE Special access control entries
+Security IDs
+DACL access rights allowed/denied to indivusers/groups
+SACL specs types of access ATTEMPTS that gen audit records for object
+
+attack.mitre.org /tactics/TA0003/
+        explainations of how attackers can use certain files to compromise a system
+Registry Run Keys .001
+
+
+HKLM\<SID>\Sftwr\MS/win/cv/run
+HKu\sys\CContset\services
+HKLM\sftw\ms\win\cv\explorer\shell Folders
+
+=========== Alternate Data Streams ===============
+
+intro ntfs win nt 3.1
+implem filesystem forks in order to maintain ...
+ADS DOES NOT CHANGE HASH
+stores the METADATA
+        file attribs, icons, thumbn,...scripts
+used to hide data
+scanned by antivirus (Win Def is ADS aware)
+
+a File's ADS is deleted upon being copied to a FAT32 filesystem
+CANNOT BE disabled
+[filename.ext]:[alt_stream_name]::$DATA
+
+dir /R filename to reveal ADS
+use 'more' cmd to get content of ADS
+
+in pwsh:
+
+set the ADS to a file:
+set-content <file> -value "hidden content" -stream <hiddenname.ext>
+
+enumerate ADS:
+get-item <file> -stream *
+        shows ADS exists/not
+get-content <file> -stream <hidden.ext>
+
+============================
+
+user settings loaded on user logon
+may require restart depending on whre in registry
+
+
+
+
+
+
