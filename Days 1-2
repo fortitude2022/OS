@@ -128,58 +128,8 @@ remove-itemproperty
 HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
 HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
 
-========== Windows Registry ================
 
-5 main HIVE KEYS
-store user settings
-HKLM changes require a restart usually
-
-
-Hive files
-HKCR Classes Root
-        file extensions and programs
-HKLM system cucontset control
-        users rights + permissions
-                #not really
-        software contain sftwr configs
-        hardware containts infor on connected devices
-                mutable data is volatile
-        will read and create regardless of who logged in
-HKU Users
-        user profiles
-        links to current unser, pool of all user info
-HKCC Current Config
-
-
-============ query registry =============
-
-get-childitem
-get-item
-get-itemproperty
-
-HLKM:\software\microsoft\windows\currentversion\run
-
-Create:
-new-item
-
-Edit:
-set-itemproperty
-
-Remove:
-remove-item
-remove-itemproperty
-
-======== RUN KEYS =============
-
-HKCU\Sftw\MS\Win\CurrentV\Run -and RunOnce
-HKLM\Sftw\MS\Win\CurrentV\Run -and RunOnce
-
-
-========== Windows Registry ================
-
-5 main HIVE KEYS
-store user settings
-HKLM changes require a restart usually=========== Alternate Data Streams ===============
+=========== Alternate Data Streams ===============
 
 intro ntfs win nt 3.1
 implem filesystem forks in order to maintain ...
