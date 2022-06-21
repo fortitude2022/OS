@@ -39,7 +39,7 @@ BIOS requires
 		winload.exe cold start
 		winresume.exe for hibernation
 		for ssds, fast boot has no rationale to be enabled
-			for hibernations, RAM is written to hibernation.sys and saved to C drive
+			for hibernations, RAM is written to HIBERFIL.SYS and saved to C drive
 			true shutdown, nothing written to a file
 			fast-boot: combo of both, writes what system is doing to a page file on C drive, then turns off, no user data saved
 				only applies to shutdowns, NOT restarts; thats why restarts fix stuff at OS level
@@ -52,7 +52,7 @@ UEFI has its own organic OS, far more secure (Kernel 6 and above)
 		some anti-virus software is signed allowing it to load pre-OS
 		
 	Process:
-	Detects if General Partition Table exists, if yes:
+	Detects if GUID Partition Table exists, if yes:
 	GPT:
 		UEFI knows where GPT is, no 2 GPT tables ought to be in same locale (exc if master image )
 	UEFI Boot manger bootmgrfw.efi
@@ -121,7 +121,7 @@ procmon sysinternals tool; very good for seeing what loads on startup
 can be used to monitor boot process on restart command
 	(options)
 keep in mind: pwsh used heavily for system automation
-corresp dll is sytemmanagement
+corresp dll is sytem.management.automation.dll
 
 
 bcdedit (pwsh cmd)
@@ -169,16 +169,49 @@ services:
 	omit MS Services (can be exploited but beyond scope of course)
 	BOLO:
 		Unknown Manufacturer; wierd names of svcs; anything sussy
-			
+--------------------------------------------------------------------------------------------------------			
 
+================================== Activity Notes ======================================
 
+in bcdedit.exe output:
 
+if path in windows boot loader is:
+winload.EXE = BIOS
+winload.EFI = UEFI
 
+bcdedit /deletevalue safeboot(alternateshell)
+shutdown -a
 
+-Powershell is Kaput: find the missing dll file
+	attempt to open via cmd, see hint
+dir (pattern) /s 
+	/s is search via a pattern
 
+what was used:
 
+dir s*.m*.a*.dll /s
+	matches any dll with s.m.a. acronym
+	find hinted file
+	copy back to powershell home directory:
+	C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\<version number>\
+	s.m.a.dll should be w/in this directory
 
+---------------------------------------------------------------------------------------------------------------------------------------------------->>>>>>
+($profile | get-member -membertype NoteProperty).name | foreach-object { if ((test-path $profile.$_) -eq $true) { Write-Host "`$PROFILE.$_" -Foregroundcolor Green -Nonewline ; Write-Host " Exists" } }
+^path to $p..^  get each profile's name | foreach profile, test if each profile exists
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+figure out why powershell session is different from default / what file changes this powershell session
 
+$profile - reserved variable (moreso an object w/ noteproperties) that save information about powershell sessions
+AUAH, AUCH, CUAH, CUCH, ( see days 1-2 for more)
+enumed w/:
+-----------------------------------------------------------------------------------------------
+$profile.BlankUserBlankHost
+-----------------------------------------------------------------------------------------------
+	-these profiles can be maniped to have special functions, and layouts
+	-above code will enum for existing profiles 
+	-enumerated w/ g-cont
+	
 
 
 
