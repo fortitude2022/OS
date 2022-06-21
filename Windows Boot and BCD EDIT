@@ -46,7 +46,7 @@ BIOS requires
 		ntoskernel.exe loads kernel
 			
 
-UEFI has its own organic OS, far more secure
+UEFI has its own organic OS, far more secure (Kernel 6 and above)
 	secureboot enabled
 		pre-kernel boot: mitigates driver level rootkits before OS loads
 		some anti-virus software is signed allowing it to load pre-OS
@@ -62,16 +62,73 @@ UEFI has its own organic OS, far more secure
 		same but with .efi inst of .exe
 		ntoskernel.exe
 	
+Kernel Loads:
+System (PID 4) is loaded:
+
+SMSS.exe
+	1995 and on, before: you needed to log off fully before switching users
+	Session Manager Something Something
+		allows for multiple user sessions
+		keeps admin accts safe
+	when it loads for first time, its owned by sysstem and creates session 0, then creates session 1 after forking itself
+		session 1 creates csrss.exe and winlogin 1
+		session 0 creates csrss 0 and wininit 0
+CSRSS.exe
+	each smss has its own
+WININIT.exe from SMSS 0
+	inits windows
+LSASS and services.exe
+	loaded by WININIT
+	LSASS security 
+	services.exe manages services
+WINLOGON from SMSS 1
+	logon process for windows
+LOGONUI.exe and USERINIT.exe from WINLOGON
+	logonui asks for uname + pw; passes cred up to lsass then self immolates
+	if lsass gives OK, userinit runs (technically doesnt exist fsr); launches explorer.exe (default shell for windows GUI)
+	
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+========== alternative ==========
+
+ntoskrnl.exe kernel + windows executive
+	smss.exe(0) Master session manager
+		csrss.exe(0) win subsystem process / WIN API
+			-kernel32.dll
+			-user32
+			-gdi32
+			-advapi32
+			-kernelbase
+			-win32k.sys -Kernel Mode
+			-conhost.exe - security layer for Console apps
+		WININIT.exe(0) Windows init process
+			services.exe(0) 
+			
+			
+			
+			
+			
+			
+================ BCD EDIT =========================
+
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		
 		
 		
