@@ -52,6 +52,7 @@ UEFI has its own organic OS, far more secure (Kernel 6 and above)
 		some anti-virus software is signed allowing it to load pre-OS
 		
 	Process:
+	Detects if General Partition Table exists, if yes:
 	GPT:
 		UEFI knows where GPT is, no 2 GPT tables ought to be in same locale (exc if master image )
 	UEFI Boot manger bootmgrfw.efi
@@ -92,45 +93,118 @@ LOGONUI.exe and USERINIT.exe from WINLOGON
 
 ntoskrnl.exe kernel + windows executive
 	smss.exe(0) Master session manager
+		-sets environ variables; sets pagefile.sys; loads win32k.sys for subsyst
 		csrss.exe(0) win subsystem process / WIN API
-			-kernel32.dll
+			-kernel32.dll	User Mode VVV
 			-user32
 			-gdi32
 			-advapi32
-			-kernelbase
-			-win32k.sys -Kernel Mode
+			-kernelbase	User Mode ^^^
+			-win32k.sys - Kernel Mode
 			-conhost.exe - security layer for Console apps
 		WININIT.exe(0) Windows init process
-			services.exe(0) 
+			services.exe(0) service control manager
+				starts all services w/ start value of 0x2 automatic
+			LSAS.exe(0) Local security authority subsys
+				authentication pkges
+	smss.exe(1)
+		csrss.exe(1)
+			-all dependas
+		Winlogon.exe(1)
+			-logonui.exe
+			-userinit.exe
+				explorer.exe (kills userinit.exe)
 			
-			
-			
-			
-			
-			
-================ BCD EDIT =========================
+========================== BCD EDIT ============================
+
+procmon sysinternals tool; very good for seeing what loads on startup
+can be used to monitor boot process on restart command
+	(options)
+keep in mind: pwsh used heavily for system automation
+corresp dll is sytemmanagement
 
 
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-		
-		
-		
-		
+bcdedit (pwsh cmd)
+
+shows Windows Boot Manager and Loader
+
+{current} = CURRENTLY LOADED OS
+
+bcdedit /? gives options 
+
+- we can make more bootloaders
+
+all changes will occur to {current} boot loader unless specified
+
+bcdedit /set '{current'}  description "Among Us"
+(in pwsh, comment out the {} w/ a ' )
+
+bcdedit /create {tldr} device partition=C
+bcdedit /set {tldr} 
+......
+
+bcdedit /setvalue safeboot minimal
+-enables safeboot ( 5 levels)
+
+bcdedit /set safeboot network
+
+bcdedit /set safebootalternateshell yes
+-allows powershell or any other shell besides cmd prompt
+-if yes; will autoboot into safeboot regardless if safeboot = minimal
+
+bcdedit /deletevalue safeboot
+bcdedit /deletevalue safebootalternateshell
+
+when you have multiple boot loaders:
+	you get prompted on start
 	
+-----EASIER METHOD-----
+
+msconfig
+
+allows different startup types
+under boot tab:
+	boot ooptions checked, select boot type
+services:
+	omit MS Services (can be exploited but beyond scope of course)
+	BOLO:
+		Unknown Manufacturer; wierd names of svcs; anything sussy
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
