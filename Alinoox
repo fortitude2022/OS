@@ -1,0 +1,63 @@
+=================== Linux =========================
+
+/ Home directory for Root User
+
+/bin
+  	binaries: program binaries not necessarily needed for system to run (program files)
+/sbin
+	system binaries: needed for the system to run in the first place (system32)
+/usr
+	UNIVERSAL system resources: programs used by individual users
+/usr/bin
+	universal binaries/programs
+/usr/sbin
+	universal system binaries to include system commands such as fdisk, cron
+	also includes Python (look into this for more)
+/boot
+	boot files (GRUB LILO) bootloader
+/dev
+	devices: monitors, keyboards, mouses, audio, storage drives + partitions, console sessions
+	/dev/null
+/etc
+	every thing configurable: passwd, shadow, group, shells
+	/etc/fstab: anything ending in tab = config file, meaning lines within are options
+/home
+	users' home directories located here usually
+/lib + /lib64 
+	dll type files
+/media
+	temporary storage devices
+/mnt
+	Mount: permanent storage devices
+/opt
+	optional: user installed programs such as spotify, steam, among us, etc.
+/proc
+	processes
+/run
+	anything thats changed to system since last boot
+/srv
+	websight specific data, obtained by either http or ftp
+/sys
+	system: drivers and kernel info
+/tmp
+	temporary, cleared on power cycle
+/var
+	variable data: LOG FILES
+	/var/spool for jobs, var/mail/ other changing items
+---------------------------------------------------------------------------
+
+========================= FILE PERMISSIONS ==============================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
