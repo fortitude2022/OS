@@ -1,0 +1,225 @@
+======================================== Linux Boot Proc =================================================
+
+	SVR4 BMGKIR (System 5 Release 4)
+	Systemd
+	
+----------------SVR4-----------------
+
+BIOS (Basic Input Output System)
+	execs MBR
+MBR ( Master Boot Record )
+	1st 512B contain MBR
+	Bootstrap code
+		446B
+	partition table
+		64B
+		x4 partitions
+			partit entries have: part flag, start chs, part byte, end chs, start lba, size
+	boot signature
+		2B aka magic number
+		0x55AA ALWAYS
+	MBR is LOCATED in -----/dev/sda-----
+	
+GRUB 
+	Grand Unified Bootloader
+	execs Kernel
+	menu.lst/grub.conf(v1) grub.cfg(v2)
+
+Kernel
+	executes /sbin/init
+Init
+	
+Runlevel
+	exec from /etc/rc.d/rc*.d/
+
+----------------Systemd------------------
+
+BIOS/UEFI Firmware
+	BIOS -> POST
+	UEFI conf Hardware
+	Control passed to next step
+MBR/UEFI Execs
+	
+GRUB
+
+Kernel
+
+Systemd
+
+Targets
+
+
+
+============================BIOS MBR=====================
+COMMANDS:
+
+xxd = hexdump 
+df = shows where things are mounted
+dd = conver/copy a file
+-ps -p
+-sudo xxd -l 512 -g 1 /dev/vda
+
+make copy of boot record
+
+-dd if=/dev/vda of=mbrcopy bs=512 count=1
+	if = infile; of = outfile; bs = Bsize; 
+
+at start of MBR:
+0xeb63 = jump 63B, hits a 9090 NOOP and then reads what its supposed to
+
+======================= GRUB ============================
+-"spools up the kernel"
+only worry about grub.cfg since what we are working with is grub v2
+config file /boot/grub/menu.lst
+
+w/in grub conf you can see what kernel version selectable
+
+(check thru this with g o' s)
+BIOS and UEFI slight different, esp file names
+
+BIOS GRUB = boot.ing
+GRUB v2 (Kali start screen)
+	allows to choose between different distros 
+
+UEFI GPT
+	grub.efi 
+	stage 2 boot/grub/grub.cfg 
+	x86_64.exe/normal.mod
+
+
+=================== Kernel =====================
+process:
+	uncomps into RAM
+	est memory mgmnt, detect cpu type, page tables
+	mounts root '/' filesyst
+	K = Process 0 [kthreadd]
+	execs /sbin/init OR systemd daemon PID 1
+	ls -l /sbin/init to determine WHICH INIT system you are on
+		system d will have an /sbin/init file POINTING to /lib/systemd/systemd 
+/sbin/init PID 1
+will run w/ different names depending on system 5 of systemd
+init vs systemd
+(see slide for more on links to where init files lead)
+
+----------------System5r4--------------
+
+Run Levels 0-6
+6 REBOOT
+5 multi-user GUI
+4 unused-udefine
+3 default-full multi-user text mode
+2 unused- userdefined
+1 single user-text mode
+0 HALT
+
+Process Manager
+Service Manager (run scripts)
+Serial System Initialization
+Config File: /etc/inittab
+	every line not commented out is a config option
+Script location: /etc/init.d
+	different processes i.e. ssh, can be managed here
+Run-level scripts location: /etc/rc*.d
+	ANYTHING w/in these files thats linked to something OTHER than init.d is a REDFLAG
+	
+---------------- Systemd ----------------- One Stop Shop -----------------
+
+Process Mngr
+Service Mngr (.ini -like format )
+Login, boot, network, NDS, timesync, logging, etc manager
+Parallel, dependa based system initzn
+Config locales:
+	/etc/systemd/system:user-made .unit files
+	/lib/systemd/system:system-made + pkg installed files
+	
+ls -lisa /lib/systemd/system/default.target points to graphical.target
+
+ls -lisa /lib/systemd/system/graphical.target.wants
+
+
+
+
+.target .service .mount (as .ini files in WIN)
+
+
+
+requires = what needs to happen
+want = what it will try to run
+conflicts = if tgt is running, this wont run
+after = what it will try to reach after
+
+===================== systemctl ==============
+on all systemd systems
+systemctl list-dependencies graphical.target
+telemetry of different services
+
+systemctl show -p Wants graphical.target
+does same but on one line
+
+systemctl cat graphical.target
+prints the lib/systemd...graphical.target file (shorthand for above method)
+
+systemctl list-unit-files
+
+
+SysV Run levels and Systemd Targets
+Halt 				0 	poweroff.target
+Single User txt 	1	rescue.target 	
+Multi U txt, nonet	2	multi-user.target
+full,MU,Net,txt		3	""
+unused				4	""
+X11 (GUI)			5	graphical.target
+Reboot				6	reboot.target
+
+SysV Directories	SystemD Targets
+/etc/init.d/rc		/etc/systemd/system
+
+-----login script------
+/etc/profile
+	refers to /etc/bash.bashrc
+
+/etc/profile for login shells
+
+non-login bashrc, bash_profile
+
+/etc/profile is great for persistence due to it running ON ALL USERS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
