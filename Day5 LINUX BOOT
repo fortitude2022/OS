@@ -55,14 +55,14 @@ COMMANDS:
 
 xxd = hexdump 
 df = shows where things are mounted
-dd = conver/copy a file
+dd = conver/copy a file, byte by byte copy; block size
 -ps -p
 -sudo xxd -l 512 -g 1 /dev/vda
 
 make copy of boot record
 
 -dd if=/dev/vda of=mbrcopy bs=512 count=1
-	if = infile; of = outfile; bs = Bsize; 
+	if = infile; of = outfile; bs = Blocksize; 
 
 at start of MBR:
 0xeb63 = jump 63B, hits a 9090 NOOP and then reads what its supposed to
@@ -185,13 +185,62 @@ non-login bashrc, bash_profile
 /etc/profile is great for persistence due to it running ON ALL USERS
 
 
+==================== SystemD Targets Continued =====================
+
+Instead of Run levels in SysV, systemd usese .target(s)
+
+-------(copy of above table in systemctl) -----------------
+SysV Run levels and Systemd Targets
+Halt 				0 	poweroff.target
+Single User txt 	1	rescue.target 	
+Multi U txt, nonet	2	multi-user.target
+full,MU,Net,txt		3	""
+unused				4	""
+X11 (GUI)			5	graphical.target
+Reboot				6	reboot.target
+---------------------------------------------------------
+SysV Directories	SystemD Targets
+/etc/init.d/rc		/etc/systemd/system
+---------------------------------------------------------
 
 
 
 
 
 
+============== NOTES ==============
 
+-etc/inittab not on systemd
+
+question: go into a bkup up an MBR, pull out the 16 bytes in rel to the FIRST partition, and md5sum it
+	dd ibs=1 if=mbroken of=mbrokenmd5 skip=446 count=16
+	ibs can be replaced w/ bs (same value of 1)
+		bs option reads each byte as 1 at a time
+		if and of are in/out file options
+		skip does as say, will skip to nth byte
+		count does as says
+
+		alternatively: to copy only the first x amt of bytes:
+	dd if=infile of=outfile bs=512 count=1
+		(use bs over ibs until a real need for ibs arises)
+Tip: Both SysV and SystemD:
+	- query which w/ ls -l /sbin/init
+	
+Tip: SysV systems:
+	-Dfault Run level found at top of /etc/inittab file
+	- you can find what run level a daemon (resp for certain svcs) will run in by default by checking the...
+	... /etc/init.d directory: find responsible daemon, cat and find #BEGIN INIT INFO -> Default Start <values>
+	
+Tips: SystemD systems:
+	-Find default TARGET (pseudo-equivalent to SysV Run-level)
+		systemctl cat default.target
+			top of catted content should have PATH to DEFAULT.target
+	-Cont from above: FIND CONFIG file for a certain target
+		systemctl cat example.target
+			top should be a /lib/systemd/system/example.target config file
+	-Requires field in a .target config file is a service that must be triggered in order for that target to be achieved
+	-Wants field is what that .target wants to start when that .target is successfully toggled
+	-
 
 
 
