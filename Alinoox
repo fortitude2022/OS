@@ -47,11 +47,22 @@
 ---------------------------------------------------------------------------
 
 ========================= FILE PERMISSIONS ==============================
+<type> User; Group; Other: Octal values for who can access a file in certain ways
+Read, Write, Execute
 
+t: Sticky Bit: Only user who creates file can delete it
+s: SGID (Group) the execution of a file will occur under group owner's name
+s: SUID (User) execution will occur as file owner
 
+SUID 4; SGID 2; Sticky 1
 
+to add:
 
-
+chmod X### file.txt
+	where X is the bit you want set
+	
+the /usr/bin/passwd command has the SUID bit set ( an S where the X would be under U section)
+this allows users who are not root, the ability to change the /etc/shadow file
 
 
 ========================== SSH HOSTS ===================================
