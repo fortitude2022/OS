@@ -1,0 +1,60 @@
+=================================== Process Validity ======================================
+
+Def: making sure a process says what it is
+Importance: also important for offense, good to know if programs on foreing device are legitimate and doing what they say they are doing;
+	enumeration of programs is important to figure out if specific releases have vulnerabilities;
+	enumeration of files its reaching out to can be used as pivot points for a compromised program;
+
+
+--------------Processes---------------
+Process: user activated/ineracted 
+killable w/o admin rights
+in order to view, you need the API 
+	you can hide things from the API, but not kernel
+		get-wmiobject win32_process is a workaround for processes hidden form API
+		
+-Get-CimInstance win32_process | where {$_.Name -like "powershell_ise.exe" } | select *
+
+-3 processes youll see under 1000 FOR USERS
+	winlogon, csrss, lsass
+
+Orphan and Zombie Processes:
+	-child proc w/ dead parent proc
+	-zombie proc is waiting for stopOrd form parent proc/ but parent proc is stopped
+	
+Process IDs below 4, fucky
+
+get-ciminstance win32_process | ...
+... select-object -property @{Expression = "ParentProcessID"; Ascending = $true }, @{Expression = $ProcessID; Ascending = $true} ...
+... | Format-table -property Name, ProcessID, ParentProcessID, path, commandline -autosize | outfile -width 4096 $home\desktop\processes.txt
+
+
+
+
+
+Service: Background, automatic, non-interactive
+	-can also be launched by meeting of certain criteria
+	-w/o admin rights can only be paused/restarted
+	-
+
+Dynamic Linked Library: callable commands used by processes/services, easy to compromise
+	run32.dll common dll used by many applications
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
