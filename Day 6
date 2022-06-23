@@ -56,9 +56,166 @@ tasklist /m
 
 mscoree.dll core windows functions
 
-
-
 use Win Registry to tell a binary to run, but direct to something else
+
+
+----------------------- Post lunch -------------------------
+
+Querying Services:
+
+sc.exe and assoc. commands
+start taskmgr
+services #opens services.msc
+tasklist /svc
+
+Find-ServiceLoadOrderGroup <svcName>
+	finds LoadOrderGroup for a svc
+	
+get-wmiobject win32_loadorderservicegroupmembers | where {$_.partcomponent -like " 
+	#check slack for rest
+	
+get-ciminstance and get-wmiobject are interchangeable
+	BUT Linux requires CIMINSTANCE over wmiobject
+
+sc.exe 
+	queries by true name NOT display name
+sc query mpssvc
+sc queryex mpssvc
+
+sc queryex type=service state=inactive
+#queries svcs in an inactive state
+
+sc showsid <svcname>
+	# If you use an improper name, or a svc that !exist, then it will random generate a fake SID for that "inactive" (fake) svc
+	
+
+	
+---- query Service via PATTERN / unk tru name ----------
+get-ciminstance win32_service | where {$_.displayname -like "*firewall*"}
+
+
+
+--------------------- schtasks -------------------
+
+Runs something once certain criteria are meet...
+
+Pwsh:
+
+Get-ShceduledTask 
+
+#FOR THE PURPOSE OF THE CLASS, IGNORE MICROSOFT AND SUBDIRECTORY SCHTASKS, FOCUS ON U-GENT
+	also only really focus on Running, NOT disabled nor stopped, and lesser extent Ready
+
+schtasks cmdline command
+
+at command 
+	# deprecated due to lack of security
+	# kernel will not allow the job
+	# may still be active on 1801 and older systems
+
+Task Scheduler GUI
+	first time open, click on task scheduler library
+
+get-ciminstance win32_process | where{$_.name -like "*calc*"} | select name, processid, parentprocessid, path, commandline
+get-ciminstance win32_process | where{$_.processid -like "*<PID>*"} | select name, processid, parentprocessid, path, commandline
+
+...name -like cmd
+	take
+
+NOTE: DCOMLAUNCH will be for Powershell scripts and commandline
+	DCOMLAUNCH = translates text to code on machine
+	
+	i.e. 
+	> C:\windows\system32\backdoor.ps1 #this is just a string for no; dcom will take the string and translate it;
+		-its responsible for running the scripts in Pwsh and cmds
+...name -like cmd
+	take ParentPID
+	Climb the PPID ladder
+
+-notes:
+	services.exe DOES launch svchost
+	you can kind of follow the tree back to early boot process UNTIL wininit
+
+
+------------Connections -------------
+
+netstat -anob
+	snapshot in time, not live
+Get-Tcpconnections on pwsh
+
+
+
+--------------------- Sysinternals Suite ----------------------------
+
+autoruns: enums things that run automatically
+	on boot, login, 
+	includes dirvers svcs, apps, reg entreies, utilities
+	queries over 200 registry locations
+		autostart something something (not needed)
+	Pink = no publisher info, signature does not match
+	green = compares from a previouv autorun instannce
+	yellow = entry exists; file it points to !exist
+	right-click > Jump to Entry > will take you to Regedit entry value
+	RC > Jump to Image > Jumps to BINARY
+	Check Icons as a potential visual cue
+	MS entires Hiddden by default as well as others hidden too
+		best to see as much as possible
+	events categorized, check tabs for appropriate target
+		includes schtasks, logon
+
+procexp: process listing in hierarchical format
+	red =deleted
+	lavender =owned by current user
+	salmon= launched by svc
+	grey =suspended
+	purple= packed images /compressed
+	cyan = windows store apps usually
+	for virustotal:
+		get-filehash and search, DONT UPLOAD
+		
+tcpview64: LIVE reading of network connections
+
+strings: allows us to look at any hardcoded script
+	strings <file> -accepteula
+	good ol' mod 16 string analysis w/ Mr Hutchinson
+	
+handle.exe: views handles of a process
+	also allows killing handles
+		handle.exe -p <PID> <handle_path>
+			great for offensive, allows to stop writing to event logs
+			
+============== USER ACCOUNT CONTROL ============================
+
+UAC: limits privis of applications, EVEN when run as ADMIN
+	goal is to prevent modifctn of files, resources, settings, etc...
+	HKML:\sftw\ms\win\cv\Policies\System
+	EnableLUA = 1, enabled, or 0 disabled
+	Smart Streams:
+		downloaded files have a pseudo itinerary in ADS 
+		UAC can block files if the stream isnt trusted # check this
+	COLOR CODE:
+		red = blocked by policy
+		blue/gold = admin req
+		blue = trusted/ authenticode signed
+		yellow = unsigned/ untrusted
+	Execution levels:
+		asInvoker:
+			app will run w/ same perms as proc that started it, can be elev w/ admin
+		requireAdministrator:
+			run w/ admin perm, user must be w/in admin group
+		highestAvailable:
+			will run w/ highest available, if user part of admin, its same as requireAdministrator
+		-some Windows execs can self elevate w/o prompt
+	UAC Prompt:
+		Auto Elevate is True:
+			./strings C:\Windows\System32\*.exe -accepteula | select-string -simplematch "autoleave"
+		Digitally Signed:
+			-simplematch "level"
+		Trusted Directory:
+			i.e. System32
+
+
+
 
 
 
