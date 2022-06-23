@@ -24,28 +24,41 @@ Orphan and Zombie Processes:
 	
 Process IDs below 4, fucky
 
+--------------------------------------------------------------------------------------------------------------------------------
 get-ciminstance win32_process | ...
 ... select-object -property @{Expression = "ParentProcessID"; Ascending = $true }, @{Expression = $ProcessID; Ascending = $true} ...
 ... | Format-table -property Name, ProcessID, ParentProcessID, path, commandline -autosize | outfile -width 4096 $home\desktop\processes.txt
+----------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
+---------------- Services ---------------
 Service: Background, automatic, non-interactive
 	-can also be launched by meeting of certain criteria
 	-w/o admin rights can only be paused/restarted
 	-
 
+svchost.exe Process that hosts Services
+	should always be coming form C:\Windows\system32\svchost.exe (check both Path and Commandline Properties to match, RFlag if NOT)
+	1 svchost per service typically, select few are lumped together (these are windows)
+	on Commandline:
+		C:\Windows\system32\svchost.exe -k <servicegroupLoadOrder> -s <legitservicename>
+							^Dependencies^
+		
+
+---------------------------------- dlls -----------------------------------------
+
+
 Dynamic Linked Library: callable commands used by processes/services, easy to compromise
 	run32.dll common dll used by many applications
+	
+get-process powershell_ise | select -expandproperty modules
+tasklist /svc
+tasklist /m
+
+mscoree.dll core windows functions
 
 
 
-
-
-
-
+use Win Registry to tell a binary to run, but direct to something else
 
 
 
