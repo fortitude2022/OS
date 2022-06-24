@@ -1,0 +1,187 @@
+================================ Linux Processes ============================
+
+Background vs Foreground
+
+
+/sbin/init (name)
+	PID of 1
+	User Process Ancestor
+	
+Kernel
+	[kthreadd] (name)
+	PID 2
+	System Processes ancestor
+	ps -f
+	
+Both share space in memory
+	Kernel prioritized, may be given more
+	User space is allotted to whats needed at that moment
+	
+Kernel Space:
+	protects kernel
+	
+Command: 	top 	
+	live feed of active processes
+			htop	-- #exceptional output
+	not always built in
+	color coded
+	mouse interaction
+	live
+	sorting options
+			atop
+	also not standard, similar but less pretty 
+	dont bother w/ it
+			ps
+	snapshot of current running processes in that moment
+	-elf option: everything, long, full; very verbose output
+	again...not a live feed
+	PPID 2 = [kthreadd] child process of system process ancestor
+	--forest: prints in tree form 
+	--pid or --ppid <#> filters on PID/PPID
+	ps --ppid 2 -lf # do it like this to filter on [kthreadd] 
+		ps -elf --ppid 2 will still print Everything > -e
+
+	
+NOTE:
+	ps-elf --forest:
+	you will see:
+	
+	/usr/sbin/cron
+		\_ /usr/sbin/CRON
+	#CRON is the child process of cron; only runs
+	
+	--context=5 will print 5 lines above and below a grep stmnt
+	
+	
+	
+---------------------- Process ownership -----------------------	
+
+2 types of users on Linux system:
+
+System User, Human User
+
+System = id 100-999
+Human = id 1000-60000
+
+Real User ID: person who owns a file's permissions
+Effective UID: files' permissions
+
+-----------------------System Calls ------------------
+fork() kernel creates near identical copy of process
+exec() kernel starts program, replacing current process
+
+shell -> fork() -> shell
+			|
+			V
+		Copy of Shell -> exec(ls) -> ls
+
+ssgt b's uses for it
+	types of attacks using fork(): fork bombs
+	
+	- to run sysproc as user: finalge it so that you can somewhat interact w/ kernel
+
+SIG system calls
+kill -l
+	
+fg %<PID> foregground a job
+
+-----Orphan processes-----
+
+orphaned process adopted by /sbin/init
+
+daemon: purposefully kills parent process and runs in background
+
+zombie/defunct process: finished running but waiting for parent-process to kill it, only killable w/ killing parent process
+	htop ; S column, Z designator 
+	
+=================== cron jobs ===============
+
+the cron daemon will query /etc/crontab (system), /etc/cron.d (system), and /var/spool/cron (user) 
+
+	cat /etc/crontab
+	#output:
+	
+	minute	hour	dayomonth	month	dayoweek	user	command
+	
+
+crontab command
+
+crontab -u
+	-u = user
+	-l list that user's cts
+	-e edit
+	
+	
+	
+systemctl stop <servicename.service> /<PID>
+systemctl status <s.s> /<PID>
+
+Where to find everything:
+
+/proc: processes
+/etc/crontab: for system cronjobs
+/etc/cron.d: system cron directory
+/var/spool/cron: user cron jobs
+
+
+Useful Commands:
+
+htop: interactive v or top cmd
+lsof: listof, use sudo
+	FD file desc:
+		file descriptor # and permissions are the important ones to look at
+		w write perm
+		r read perm
+		W write-lock
+		u read and write
+		# associated the order that process is accessing those files in
+			BUT
+			0,1,2 are streams input, output, and error, all others are numerical order
+	lsof -c <process> 
+		shows processes related to one named
+		
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
