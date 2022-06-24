@@ -127,7 +127,7 @@ Where to find everything:
 Useful Commands:
 
 htop: interactive v or top cmd
-lsof: listof, use sudo
+lsof: List Open Files, use sudo
 	FD file desc:
 		file descriptor # and permissions are the important ones to look at
 		w write perm
@@ -141,9 +141,20 @@ lsof: listof, use sudo
 		shows processes related to one named
 		
 		
-		
+========== CTFD notes ==============
 
-
+-/proc directory has dirs with PIDs of processes
+	-those processes contain symbolic links to other files in the system
+	-i.e.
+		PID 6969 hosts the /usr/sbin/sshd daemon/process;
+		/proc/6969 contains a symbolic link 'exe' to that /usr/sbin/sshd file
+-lsof can be used to ID processes w/ ports, active sockets, and permissions 
+	- sudo lsof -i UDP/TCP:<port#>
+		this queries based on port #
+		the FD perm value in relation to the sockets is aligned w/ the name column IP:port/service 
+-PERSISTENCE = ETC/INITTAB
+-use sudo lsof -p <PID> on the parent of a zombie process to ID any potential file it writes to
+-
 
 
 
