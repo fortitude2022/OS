@@ -25,23 +25,27 @@ look into wmic...
 
 userassist registry key tracks GUI based programs that were ran by a user
 
-view exec files run
 
 get-itemproperty 'REGISTRY::HKU\*\SOFTWARE\MS\WIN\CV\EXPLORER\USERAS \{CEBFF5CD ... 1749EA} \COUNT'
+	view exec files run
 
-view shortcut files exec'd
 get-itemproperty 'REGISTRY::HKU\*\SOFTWARE\MS\WIN\CV\EXPLORER\USERAS \{F4E57 ...E33D9F }\COUNT
+	view shortcut files exec'd
+{} value is GUID
 current user's settings held in NTUSER.dat
 
 uses ROT13 Encoding (ceasar 13)
 
 Userassist is great to determine if .lnk / Shortuct files have been ran
 
+
 ============= Windows Background Activity Moderator BAM =============
 Windows service that controls activity of BG apps
 HKLM:\sys\currentcontrolset\services\basm\usersettings\*
 	win 1709 & 1803
 \bam\state\usersettings\*
+	win 1809 and newer
+if none, then earlier than 1709
 	
 in output:
 	no slashes in path means its read from environmental path
@@ -77,7 +81,7 @@ Prefetch Files are created by windows OS when app is run from location for first
 	prefetch file is conclusive evidence that something ran, only execution creates a prefetch
 	with right tool, you CAN grab the binary w/in
 	Prefetch purpose is it saves where things are run from for faster program startup time
-	gci C:\windows\prefetch
+	gci C:\windows\prefetch <<<---------- PATH
 	windows 8 and on 1024 entries possible
 	Superfetch:
 		win 10
@@ -91,6 +95,8 @@ Prefetch Files are created by windows OS when app is run from location for first
 Win 7-10 taskbar (jum list) engineered to allow users to jump / access items thhey frequently use quickn easy
 gci -recurse C:\users\*\appdata\roaming\ms\win\recent -erroraction continue | select fullname, accesstime
 
+
+
 ----------------------------- Recent Files ------------------
 
 files recently accessed
@@ -99,6 +105,11 @@ files recently accessed
 	registry key tracks last 150 files/dirs that you opened
 	stored in registry in HEX, requires conversion
 	see slides for Pwsh command, Property number may need to change
+Registry Locations:
+	gci 'REGISTRY::HKEY_USERS\*\Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs'
+	
+	convert from hex to unicode:
+	[System.Text.Encoding]::Unicode.GetString((gp "REGISTRY::HKEY_USERS\*\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\.txt")."0")
 
 -------------------------------- Browser Artifacts --------------------------
 
@@ -107,7 +118,13 @@ history will record the access to file on website that was accessed
 	Mozilla refuses to use windows credential manager
 		percieves it as being easily manipulated w/ is true
 	for CTFd, we are looking at Google chrome location
-	(See sldie for paths and more details)
+	
+.\strings.exe 'C:\Users\<username>\AppData\Local\Google\Chrome\User Data\Default\History'
+	#command using strings.exe to read History file
+
+$History = (Get-Content 'C:\users\<username>\AppData\Local\Google\Chrome\User Data\Default\History') -replace "[^a-zA-Z0-9\.\:\/]",""
+	#find FQDNs w/in history directory
+	
 Chrome folder includes:
 	browser history
 	cached pages
@@ -141,10 +158,13 @@ We dont acutally manipulate the audit policy; we will advise on what should happ
 at startup, LSASS sends system auditpol to Security Reference Monitor (SRM)
 when object is accessed, SRM gen auditing messages and sends to LSASS
 LSASS sends event log msg to Event Logger
+
 System
+	update installations
 CustomLog
 Application
 Security
+	login attempts
 		
 get-eventlog
 	ones to worry about:
