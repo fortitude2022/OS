@@ -1,0 +1,198 @@
+
+==================================== Audtiting ==================================
+
+Cyber Marines' unofficial job to determine what gets logged and what not
+
+Logging: important for offensie to know what gets logged by a system to maintain anonymity
+Artifacts: something left behind after code execution
+	like the shit cleaned up by CCleaner
+	Logs are considered artifacts
+	Handles dont count
+	Changes to Registry
+	Files being dropped/written
+	
+Cyber Threat Hunting: intel based off artifacts usually
+
+Shellbacks: keeps history of everything in windows file explorer
+	w/in registry
+User settings and artifacts w/ be in Registry
+	sorted by SID, find the users' SIDS
+		get-localuser | select name, sid
+		#only for accounts for local machine, not domain controllers
+look into wmic...
+
+============== USERASSIST =====================
+
+userassist registry key tracks GUI based programs that were ran by a user
+
+view exec files run
+
+get-itemproperty 'REGISTRY::HKU\*\SOFTWARE\MS\WIN\CV\EXPLORER\USERAS \{CEBFF5CD ... 1749EA} \COUNT'
+
+view shortcut files exec'd
+get-itemproperty 'REGISTRY::HKU\*\SOFTWARE\MS\WIN\CV\EXPLORER\USERAS \{F4E57 ...E33D9F }\COUNT
+current user's settings held in NTUSER.dat
+
+uses ROT13 Encoding (ceasar 13)
+
+Userassist is great to determine if .lnk / Shortuct files have been ran
+
+============= Windows Background Activity Moderator BAM =============
+Windows service that controls activity of BG apps
+HKLM:\sys\currentcontrolset\services\basm\usersettings\*
+	win 1709 & 1803
+\bam\state\usersettings\*
+	
+in output:
+	no slashes in path means its read from environmental path
+	C:\ = to \Device\Harddiskvolume1\
+	if X:\ where x is any letter, that item was manually written
+	
+----Recycle Bin -----------
+
+Windows "deletes" by allowing things to be written over, does not write over automatic
+
+shift+delete removes the mapping as well
+
+gci 'C:\$RECYCLE.BIN' -recurse -force
+					-recurse -verbose -force | select *
+					
+gci -force "C:\`$Recycle.Bin"
+	comment out $ with `
+	everything w/in RB is hidden by default (use -force)
+	-recurse will allow you to view all users' bins at once
+	$R is the contents of the file
+	$I is original path in name of the file
+	6 char randomized name created after $I or $R
+	
+gci -f -r 'C:\$Recycle.Bin\ user sid \ | foreach-object { Write-host "$_.name -->" ; write-host (get-content $_.fullname)
+
+----------- Prefetch -----------------
+
+Prefetch Files are created by windows OS when app is run from location for first time
+	been around for a while
+	enabled by default on windows client from win xp and on
+	ill advised to enable on a server, pointless 
+		why: when someone connects to server, it forks the web service to a different process
+	prefetch file is conclusive evidence that something ran, only execution creates a prefetch
+	with right tool, you CAN grab the binary w/in
+	Prefetch purpose is it saves where things are run from for faster program startup time
+	gci C:\windows\prefetch
+	windows 8 and on 1024 entries possible
+	Superfetch:
+		win 10
+		enabled by default
+		file starts w/ Ag and ends w/ .db
+		graded by sysmain
+		beyond scope of course
+		
+-------------------------- Jump Lists ---------------------------
+
+Win 7-10 taskbar (jum list) engineered to allow users to jump / access items thhey frequently use quickn easy
+gci -recurse C:\users\*\appdata\roaming\ms\win\recent -erroraction continue | select fullname, accesstime
+
+----------------------------- Recent Files ------------------
+
+files recently accessed
+	within explorer and start menu
+	both pull from recent files
+	registry key tracks last 150 files/dirs that you opened
+	stored in registry in HEX, requires conversion
+	see slides for Pwsh command, Property number may need to change
+
+-------------------------------- Browser Artifacts --------------------------
+
+stores details for each user acct
+history will record the access to file on website that was accessed
+	Mozilla refuses to use windows credential manager
+		percieves it as being easily manipulated w/ is true
+	for CTFd, we are looking at Google chrome location
+	(See sldie for paths and more details)
+Chrome folder includes:
+	browser history
+	cached pages
+	autofill data
+	use sqlite for databease creation
+		could also use strings.exe to examine
+		incognito prevents write to sqlite DBs, cookies time out
+			ISP still sees, as well as OS
+			(still in dns cache too)
+		includes FQDN
+
+----------------------------------- Windows Auditing -----------------------------
+
+Anything in Auditing gets logged...
+
+AUDITPOL cli cmds
+
+AUDITPOL /get /category: *
+	dumps all settings and categories
+Defaults reside in Local Security Policy (start menu)
+		allows modding of rules like:
+			lockout time
+			audit events succ/fail
+			
+gpupdate /force 
+	forces group policy update, doesnt require reboot
+	
+We dont acutally manipulate the audit policy; we will advise on what should happen if they listen that is.
+
+---------------------------------- Event Logs -----------------------------------------
+at startup, LSASS sends system auditpol to Security Reference Monitor (SRM)
+when object is accessed, SRM gen auditing messages and sends to LSASS
+LSASS sends event log msg to Event Logger
+System
+CustomLog
+Application
+Security
+		
+get-eventlog
+	ones to worry about:
+		application, security, system; if these are cleared to 0 or less than 10, thats a red flag
+	overflowaction: determines whats done with older logs
+	retain: number of logs
+	stored as xml files
+	
+get-eventlog -logname <logname> | select ... 
+
+get-winevent -listlog
+	sources of the event logs
+	a lot more powerful, more grainular
+	get event ids 
+	scriptlock logging logged here 
+		MS-WIN-Powershell
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
