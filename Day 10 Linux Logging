@@ -31,9 +31,22 @@ Authentication:----------------------------------------
 /var/log/auth.log Authentication rel
 /var/run/utmp	users currently logged in
 /var/log/wtmp	history file for utmp
-/var/log/btmp	failed li
-	
+/var/log/btmp	failed logins
+	Notes:
+		sudo tail /var/log/auth.log
+		ssh session indication:
+			Accepted password ...
+			pam_unix ... (pam is a plugin for ssh, inquire)
+			New Session XYZ ...
+			Accepted Ppublickey ...
+			#switch user
+			Succcessful su for xyztty by johndoe...
+			+ /dev/pts/<x> for xyz ...
+			
 Application:-------------------------------------------
+apache - directory found on web servers
+apt - package manager (directory)
+
 /var/log/mysql.log
 
 System:------------------------------------------------
@@ -41,16 +54,16 @@ System:------------------------------------------------
 /var/log/syslog 	ubuntu/debian catch all
 
 dmesg = device messenger queires /proc/kmsg
+	Notes:
+		first logs gen'd by system
+		
+=============================== Log Settings ============================
 
-(end log types)
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
------------- At a glance ----------------------
 Location : /var/log
 Config File : /etc/rsyslog.conf
 Service : /usr/sbin/rsyslogd
 
-----------	Daemon ----------
+--------------------- Daemon -----------------------
 /usr/sbin/rsyslogd
 	reads msgs written to /dev/log
 	format/stores these based on /etc/rsyslog.conf
@@ -72,17 +85,18 @@ Facility Codes:
 10  security/authorization messages
 11  FTP daemon
 12  NTP subsystem13|log audit
+(abridged, 23 total, query gunny google for more)
 
 Severity Codes:
-	0-7
-	0 emerg, panic: system unusable
-	1 alert: action needed NOW
-	2: crit: critical conditns
-	3: err, error: erros conditns
-	4: warn, warning: Warning conditions
-	5  notice: Normal but significant condition
-	6  info: Informational messages
-	7  Debug: Debug-level messages
+0-7
+0 emerg, panic: system unusable
+1 alert: action needed NOW
+2: crit: critical conditns
+3: err, error: erros conditns
+4: warn, warning: Warning conditions
+5  notice: Normal but significant condition
+6  info: Informational messages
+7  Debug: Debug-level messages
 
 ========================== Log Enum/Mgmnt =============================
 
@@ -94,9 +108,17 @@ tail -f -> continuously show file end
 less /var/log/syslog views log in a page viewer frmt
 logger - see man
 > var/log/messages - wipes logs
+	overwriting the file instead of replacing will KEEP that inode number, less sus, but still risky/sus due to sweeping deletion of logfile;
+	relies on advs' ignorance/lazyness to check, -last resort only-
 last -f /var/log{wtmp,btmp} - Needed to view data files
 
+for the xtmp files, they are binary and NEED the last -f command to view
+tty = physical access
+vty = desktop session (sometimes telnet)
+pts = ssh type connection
+
 ========================= Auditing vs Logging ======================
+
 Logging: system/app defined
 Auditing: User defined
 
@@ -105,6 +127,56 @@ Auditing: User defined
 auditctl - control/config command
 aureport - summarize audit logs
 ausearch - queries audit logs
+
+
+Notes:=================================
+
+sudo journalctl -ef -t sshguard -t sshd (queries info from sshguard service about login attempts)
+grep timesync /var/log/syslog
+
+Systemd only...
+assume sudo ...
+journalctl --list-boots
+	list boot session IDs
+journalctl -b <bootsessionID>
+	list events in that one boot session
+	can also query boot by "index" i.e. 3 boots ago etc...
+-e page by page
+journalctl --since "datestring"
+	ex:
+		journaltcl --since "2022-01-20" #anything since 22JAN20
+	can also close out w/ --until
+	ex:
+		journalctl --since "2022-06-20" --until "2022-06-24"
+	time params can aslo take strings like "1 hour ago", "yesterday", and exact time as well
+journalctl _PID=<pid>
+journalctl -k shows kernel msgs
+journalctl -p err
+	#shows all error messages
+journalctl -p err -b 3
+	#error msgs from 3 boots ago
+
+-Some logs have different markup languages i.e. xml
+-some logs are in binary frmt
+-JSON (splunk) javascript object notation, human readable
+
+journalctl -p alert -o json-pretty
+	#outfiles alert msgs in json format
+journalctl -n <#>
+	x most recent entries
+journalctl --vacuum-size=1G
+	#clears logs by 1 Gigabyte (by virtue of age)
+	also:
+	--vacuum-time=1month
+	# clears logs that are older than 1 month
+/etc/systemd/journald.conf
+	config file for journalctl
+
+
+
+
+
+
 
 
 
