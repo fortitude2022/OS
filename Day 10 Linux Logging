@@ -21,11 +21,6 @@ Summary:
 ==================================== Log Types ========================================
 CONFIGURATION: /etc/rsyslog.conf
 
-format:		facility . severity
-facility: event type
-severity: level and higher
-* = all
-; = except the following
 
 
 Authentication:----------------------------------------
@@ -43,7 +38,42 @@ Authentication:----------------------------------------
 			#switch user
 			Succcessful su for xyztty by johndoe...
 			+ /dev/pts/<x> for xyz ...
-			
+
+format:		facility . severity
+facility: event type
+severity: level and higher
+* = all
+; = except the following
+! = boolop, not this
+= = just this
+
+Facility Codes: 
+0   kernel messages
+1   user-level messages
+2   mail system
+3   system daemons
+4   security/authorization messages
+5   messages generated internally by syslogd
+6   line printer subsystem
+7   network news subsystem
+8   UUCP subsystem
+9   clock daemon
+10  security/authorization messages
+11  FTP daemon
+12  NTP subsystem13|log audit
+(abridged, 23 total, query gunny google for more)
+
+Severity Codes:
+0-7
+0 emerg, panic: system unusable
+1 alert: action needed NOW
+2: crit: critical conditns
+3: err, error: erros conditns
+4: warn, warning: Warning conditions
+5  notice: Normal but significant condition
+6  info: Informational messages
+7  Debug: Debug-level messages
+
 Application:-------------------------------------------
 apache - directory found on web servers
 apt - package manager (directory)
@@ -72,32 +102,7 @@ Service : /usr/sbin/rsyslogd
 	kernel ring buffer
 	audit records w/ auditd
 	
-Facility Codes: 
-0   kernel messages
-1   user-level messages
-2   mail system
-3   system daemons
-4   security/authorization messages
-5   messages generated internally by syslogd
-6   line printer subsystem
-7   network news subsystem
-8   UUCP subsystem
-9   clock daemon
-10  security/authorization messages
-11  FTP daemon
-12  NTP subsystem13|log audit
-(abridged, 23 total, query gunny google for more)
 
-Severity Codes:
-0-7
-0 emerg, panic: system unusable
-1 alert: action needed NOW
-2: crit: critical conditns
-3: err, error: erros conditns
-4: warn, warning: Warning conditions
-5  notice: Normal but significant condition
-6  info: Informational messages
-7  Debug: Debug-level messages
 
 ========================== Log Enum/Mgmnt =============================
 
