@@ -159,6 +159,8 @@ at startup, LSASS sends system auditpol to Security Reference Monitor (SRM)
 when object is accessed, SRM gen auditing messages and sends to LSASS
 LSASS sends event log msg to Event Logger
 
+-Also, check within all log locales for Events that share the same InstanceID
+
 System
 	update installations
 CustomLog
