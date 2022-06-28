@@ -1,0 +1,127 @@
+================================Logging=============================
+Annotation of different events
+Logs can tell us whether our system was compromised
+	evidence of compromise allows us to ID weaknesses
+On Offense, you want to avoid tripping logs
+
+Pros:
+	remote logging
+
+Cons:
+	can be cryptic, hard to understand, require exp sftwr
+	info overload
+	logging params might miss events and not be helpful
+	issues arise if time desynched between systems
+	Resource heavy, i.e. power and memory
+	if and adversary see those logs get tripped, they know they are on an important system
+Summary:
+	Logging is useful, but only w/ context
+	
+==================================== Log Types ========================================
+CONFIGURATION: /etc/rsyslog.conf
+
+format:		facility . severity
+facility: event type
+severity: level and higher
+* = all
+; = except the following
+
+
+Authentication:----------------------------------------
+/var/log/auth.log Authentication rel
+/var/run/utmp	users currently logged in
+/var/log/wtmp	history file for utmp
+/var/log/btmp	failed li
+	
+Application:-------------------------------------------
+/var/log/mysql.log
+
+System:------------------------------------------------
+/var/log/messages	legacy catch all
+/var/log/syslog 	ubuntu/debian catch all
+
+dmesg = device messenger queires /proc/kmsg
+
+(end log types)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+------------ At a glance ----------------------
+Location : /var/log
+Config File : /etc/rsyslog.conf
+Service : /usr/sbin/rsyslogd
+
+----------	Daemon ----------
+/usr/sbin/rsyslogd
+	reads msgs written to /dev/log
+	format/stores these based on /etc/rsyslog.conf
+	syslog() - libc
+	kernel ring buffer
+	audit records w/ auditd
+	
+Facility Codes: 
+0   kernel messages
+1   user-level messages
+2   mail system
+3   system daemons
+4   security/authorization messages
+5   messages generated internally by syslogd
+6   line printer subsystem
+7   network news subsystem
+8   UUCP subsystem
+9   clock daemon
+10  security/authorization messages
+11  FTP daemon
+12  NTP subsystem13|log audit
+
+Severity Codes:
+	0-7
+	0 emerg, panic: system unusable
+	1 alert: action needed NOW
+	2: crit: critical conditns
+	3: err, error: erros conditns
+	4: warn, warning: Warning conditions
+	5  notice: Normal but significant condition
+	6  info: Informational messages
+	7  Debug: Debug-level messages
+
+========================== Log Enum/Mgmnt =============================
+
+/etc/logrotate.conf : determines how large logs get, how often they rotate
+
+Commands:
+ls -l /var/log
+tail -f -> continuously show file end
+less /var/log/syslog views log in a page viewer frmt
+logger - see man
+> var/log/messages - wipes logs
+last -f /var/log{wtmp,btmp} - Needed to view data files
+
+========================= Auditing vs Logging ======================
+Logging: system/app defined
+Auditing: User defined
+
+[kauditd] - runs at kernel level, cannot monitor individual syscalls (/sbin/auditd)
+
+auditctl - control/config command
+aureport - summarize audit logs
+ausearch - queries audit logs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
