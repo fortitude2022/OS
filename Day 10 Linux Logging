@@ -172,6 +172,31 @@ journalctl --vacuum-size=1G
 /etc/systemd/journald.conf
 	config file for journalctl
 
+auditctl -l
+	# queries -list- of user rules
+auditctl -s
+	# q's current -state- of the audit system
+#writing a rule
+auditctl -w /etc/hosts -p wa -k hosts_file_change
+	(beware - and !-)
+	-w dir specified
+	-p perms
+	w write
+	-a attribs
+	-x execute
+	-k pname you gen'd (rule name)
+	-W (capital W, removes rule)
+	#this example logs changes to /etc/hosts file
+	Study this, this is format for Audit rules...
+	
+aureport
+	# gives verbose summary of the user gen'd logs
+	
+ausearch -k configaccess
+	searches auditlogs for whatever entry youre looking for
+	-a action
+	-s for system calls
+	-k for keyname
 
 
 
