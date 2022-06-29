@@ -1,0 +1,158 @@
+================================== Active Directory Enumeration ============================
+
+Active Directory is the name of the SOFTWARE form Microsoft that manages a Domain Controller
+
+Domain Controller:
+	1 master authenticator
+	Domain conts based on names for hosts
+		requires a DNS, if none detected, DC will become DNS
+	Primary DC:
+		head DC, the big man, the don, the capo
+		essentially the Iron throne
+			create it, lock it away
+			24 ports that are used, deactivate all others
+	Secondary DC:
+		DCs made and join domain
+		REPLICATE Primary DC's information
+		offers decoy and redundancy
+					
+	Read Only DCs
+		reads authentication and passes it
+		doesnt preform the authentication
+	
+	modern: forks request, saves nothing 
+		cache only requires many options no adays to prevent people form using it] 
+
+AD uses same algorithm, same salt, as Server 2003. Both are public 
+	CANT change salt because it will fuck with kerberos
+when 2ndDC wants to make a change, sends a push request to 1DC, so that 1DC can potnly push updated info to other 2ndDCs. 
+bad to make settings changes on the primary DC itself
+
+Domain types:
+	Normal
+		contains Child-domains
+	Flat-Domains: Suck
+		1 DC across the board
+		trust variations
+			2 way trust
+			1 way trust
+				parent to child
+					child accepts creds from parent
+				child to parent
+					parent accepts creds from child
+				aka segmented domains
+
+Notes:
+
+	beware, FGuide is wrong about Domain/tree semantics gobbldygook
+	
+get-localuser
+	on srver w AD/DC, every acc is condrd local, regarless of lodal/domain
+get-aduser
+	gets ONLY domain users
+get-addomain
+	DNSRoot built directly from DistinguishedName
+	
+	
+	
+	
+Remote server admin toolkit
+RSAT
+	software suite of admin tools for DC, good for admin stations
+Otherwise:
+load module active directory:
+	get-module activedirectory
+	
+any srv not DC, listed as a Computer
+
+STALE ACCOUNTS are key to persistence on a system, biggest threat to a system's security
+
+
+For Help:
+	get-command get-adad*password*
+
+
+LockoutDuration             : 00:30:00
+	amt time locked out
+	if 0, requires admin unlock
+LockoutObservationWindow    : 00:30:00
+	time where tries are allowed
+LockoutThreshold
+	if 0, can try infinite
+
+
+------------------------------- Groups ----------------------------
+Security Groups:
+	for permissions
+	Global and Universal
+		Universal: anything w/in that forest
+		Global: only for that domain
+	SecGroup Flaw:
+		when applying perms to groups, you can have nested groups
+			easy way to give people higher privs than needed
+			get-adgroup -Identity "Domain Admins"
+			and adgroupmember
+			get-adgroupmember -id "D As" -recursive
+		Explicit Denys exist to block certain actions
+			 MS's official way to fix nested groups
+		get-aduser -filter * | where {$_.name -like "String.name"}
+			gets specific domain user
+		get-aduser -filter * | where {$_.name -like "String.name"} | select *
+			wont work
+		get-aduser -filter * -properties * | where {$_.name -like "String.name"} | select *
+			will work
+Distribution Groups:
+	information passing
+
+
+BOLO:
+
+krbtgt if enabled allows to create new master tickets, bad...
+
+search-adaccount -AccountExpired | select name
+get-aduser -filter * -properties * | where {$_.enables -eq $false} | select name, enabled
+
+view group policies:
+
+gpresult /r
+
+
+============================================ Notes in somehwat order ==========================================
+
+from CTFds:
+-Domain portion of a SID is section that starts w/ 2 digit group num and ends right before 4 digit user number
+-get-adgroup -filter *
+	gets list of domain groups
+-get-aduser -filter *
+	shows users w/ Default settings
+-get-aduser -filter * -properties *
+-search-adaccount ...
+	-accountdisabled
+		shows disabled accts
+	-accountexpired
+		expired accts
+	get-help search-adaccount for more...
+-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
