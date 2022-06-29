@@ -1,0 +1,92 @@
+Volatility is a software suite for Windows and Linux
+
+Order of Volatility - half life of data
+	1 cpu registers, cache
+	2 route table, arp, proc table, kernel status, memory
+	3 temp files
+	4 disk
+	5 remote logging, monitoring data
+	6 physical config, net top
+	7 archival media
+	
+Volatility(Software)
+	Memory analysis framework
+	cross platform
+	Each OS has its own tool (Persisten Memory / pmem)
+		Linpmem
+		Winpmem
+		OSXpmem
+	Stores different profiles based on kernel its being run on
+	
+	
+	
+	.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem imageinfo
+	
+	.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86
+	
+	.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86 pslist
+	
+	pstree gives it in tree format
+	
+	"dump" commands indic outifle i.e:
+		procdump -p #process <PID> -D . #new file named as the process
+	
+.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86 procdump -p 1640 -D .
+	Hashable, look on virustotal
+.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86 memdump -p 1640 -D .
+	examine in notepad++
+	
+.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86 consoles
+	examine command history
+	
+pslist / psscan ID rogue processes
+	
+if you ID anything, get the dll list
+.\volatility_2.6_win64_standalone.exe -f .\cridex.vmem --profile=WinXPSP2x86 dlllist -p <PID>
+	will get the dll list
+	dlldump (same formate as other dumps) used to export
+
+look at network artifacts w/ connections option and connscan
+	connections = active
+	connscan = shows active and terminated
+	
+to find code injection use option: malfind
+to find rootkits : devicetree
+others:
+	filescan
+
+dump sus drivers : driverirp
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
