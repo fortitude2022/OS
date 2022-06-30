@@ -1,0 +1,23 @@
+net use * http://live.sysinternals.com
+autoruns:
+  Sched Tasks
+  jump to entry for registry
+  
+get-ciminstance win32_service | select name, pid, pathname
+
+sysinternal tool autoruns ... Task Sched, Get-Scheduledtask, schtasks
+
+Review
+  UAC levels
+  UAC colors
+  Windows Persistence
+    run keys in HKLM, HKCU
+	$profiles
+		$pshome\$profile = allusersallhosts
+		AUAH is the $profile that PS will prioritize
+		test-path $PROFILE will return true/false
+		test-path $PROFILE.allusersallhosts or others
+		slack script available on slack for it: 
+		
+		
+		
