@@ -132,7 +132,12 @@ from CTFds:
 	-accountexpired
 		expired accts
 	get-help search-adaccount for more...
--
+-Short Name for a Domain = NetBIOS name
+
+-get-adgroup "admins"
+	this will get you information about the group itself, but not the members
+-get-adgroupmember -identity "admins" -recursive | select name
+	lists the members within a group
 
 
 
