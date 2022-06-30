@@ -18,6 +18,112 @@ Review
 		test-path $PROFILE will return true/false
 		test-path $PROFILE.allusersallhosts or others
 		slack script available on slack for it: 
+$Recycle.bin
+	$R is address
+	$I is content
+path ususally: 
+	C:\$Recycle.bin\<SID>\item
+Other windows artifacts and where to find them...
+	
+	
+get-item HKLM:\ s m w cv Run
+	get-item and NOT get-content, gi reads the key
+
+CMD bcdedit command
+	bcdedit output:
+		WBL
+			path, if winload.exe, then BIOS
+			path, if winload.efi, is UEFI
+			for test, it will be BIOS
 		
 		
-		
+Ignore:
+	drivers
+	dlls, deep insides of executables
+	names of files are fair game, internals of files are a rabbit hole
+	no string analysis
+	
+================================================ Linux Review ======================================================
+psuedo-ignore	
+	no strings off executables
+	no strings off .so (static obj/similar to dll)files
+	
+Focus:
+	Host Enumeration
+		Who am i
+			w, who, whoami, ifconfig
+		where am i
+			ifconfig
+			timezone enum
+			arp cache
+		what am i
+		whats going on
+		whys that happening
+		whats in the machine
+		what can i do
+			what permissions
+				sudo -l
+				if: (ALL : ALL) ALL, then can sudo everything
+		am i connected
+			netstat
+			ss -ntlp
+				n numeric
+				l listening
+				p process
+				t tcp
+				u udp (unneccessary?)
+				if no proc name/pid, that means no permissions to see that output, use sudo to fix
+		processes:
+			ps -elf --forest | grep -B <lines> <PID>
+				-B before lines
+				-A after lines
+				--context=x both sides
+			htop, live image
+
+Parent PID of 1
+	may show systemd designation
+	daemon - usually
+	malicious to orphan itself
+	
+	assume you want to look at config for sshd svc:
+		for systemd:
+			systemctl cat ssh
+				cats the ssh service config file
+				good to look w/in these files
+					i.e. cat /etc/ssh/sshd.config
+					might find strange settings in here
+	for sysV systems, usr/bin/inittab
+Check log files
+cron usual suspect for persistence
+	cron = parent process
+		system ran(?)ish
+	CRON = child proc of cron
+	etc/crontab
+		everything under CRON would (usually, esp in course) be run by USER
+		var/spool/cron/cronttab is USER, other two are SYSTEM (/etc/cron.d ; /etc/crontab)
+	anacron is legit
+		etc/cron.weekly and others will have stuff w/in them
+	
+other persistence:
+	/etc/profile
+	/etc/bashrc
+	.bashrc in home
+	.profile
+	other bash related like bash_profile
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
