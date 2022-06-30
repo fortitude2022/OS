@@ -1,0 +1,108 @@
+================= Log Formats ==================
+
+https://www.w3schools.com/xml/xpath_intro.asp
+http://www.whitebeam.org/library/guide/TechNotes/xpathtestbed.rhtm
+http://xpather.com/
+
+https://librarycarpentry.org/lc-webscraping/02-xpath/index.html
+
+https://jqplay.org/
+https://docs.jsonata.org/simple
+https://stedolan.github.io/jq/manual/
+
+XML
+elements, attributes, values
+
+attirbs
+	followed by = then followed by value
+element
+	precedes attrib and value 
+
+Format
+	element at open < ; closes at />
+	can continue on same line...
+	indentation on windows for Humanreadability
+	
+i.e. 
+<bigL>
+	<scaninfo type="syn" protocol="tcp" numservices="200" services="1-200"/>
+	<element  Attr="Val" />
+</bigL>
+
+xpath command:
+xpath -q -e "//@addr" <file>
+	// search in whole doc
+	@ attrib
+	-e query
+	-q quiet
+	
+xpath -q -e "nmaprun/host/address/@addr" output.xml
+	llok at head 15
+	get ip addr
+	find location of attrib
+	treat elements as directories
+	
+tying multiple things together in xpath...
+
+xpath -q -e '//@portid (bool operand ||=and  |=or ) //@addr' <file>
+xpath -q -e '/nmaprun/host/ports/port/@portid | /nmaprun/host/address/@addr' output.xml
+	better, actually works for q
+	
+xpath -q -e '//@portid/ancestor::<commonelement> #in this case host/address/@addr | //@portid'
+	//@portid/ancestor:: choose the common element they are in (form right not left)
+		"walks down, gets a hit, then goes back up to come back a different path"...
+		
+========================================== JSON =====================================================
+
+jq command
+
+pretty print a JSON file:
+	jq '.' conn.log
+
+{
+  "ts": 1615383120.630168,
+  "uid": "Cg1vc2CRiphQ1bqwa",
+  "id.orig_h": "10.50.24.73",
+  "id.orig_p": 4420,
+  "id.resp_h": "192.168.65.20",
+  "id.resp_p": 9200,
+  "proto": "tcp",
+  "duration": 3.0994415283203125e-06,
+  "orig_bytes": 0,
+  "resp_bytes": 0,
+  "conn_state": "REJ",
+  "missed_bytes": 0,
+  "history": "Sr",
+  "orig_pkts": 1,
+  "orig_ip_bytes": 60,
+  "resp_pkts": 1,
+  "resp_ip_bytes": 40
+}
+
+
+
+jq '."id.orig_h"' conn.log 
+	just prints the field specified
+
+jq '.|select(.resp_ip_bytes > 40)| ."id.orig_h"' conn.log
+	|select block w/ an operator|
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
